@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>La Caja Fuerte del Amor</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            background-color: #333333;
+            color: white;
+            text-align: center;
+        }
+
+        #caja-fuerte {
+            background-color: #222222;
+            border: 4px solid #555555;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 80%;
+            max-width: 400px;
+        }
+
+        h1 {
+            color: gold;
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        
+        #mensaje-principal {
+            color: white;
+            font-weight: bold;
+            margin-bottom: 25px;
+        }
+
+        #entrada-codigo {
+            width: 150px;
+            height: 50px;
+            font-size: 30px;
+            text-align: center;
+            margin-bottom: 25px;
+            background-color: #000000;
+            color: #00ff00;
+            border: 2px solid #555555;
+            padding: 5px;
+            letter-spacing: 5px;
+        }
+
+        #boton-abrir {
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 18px;
+            font-weight: bold;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        #boton-abrir:hover {
+            background-color: #004d99;
+        }
+
+        #mensaje-ganador {
+            color: #00ff00;
+            font-size: 24px;
+            font-weight: bold;
+            margin-top: 20px;
+            white-space: pre-wrap;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.0/dist/confetti.browser.min.js"></script>
+</head>
+<body>
+
+<div id="caja-fuerte">
+    <h1>CAJA FUERTE DIGITAL</h1>
+    
+    <div id="mensaje-principal">Introduce el Código de 4 Dígitos:</div>
+    
+    <input type="password" id="entrada-codigo" maxlength="4" autofocus>
+    
+    <button id="boton-abrir" onclick="verificarCodigo()">ABRIR CAJA</button>
+    
+    <div id="mensaje-ganador"></div>
+</div>
+
+<script>
+    // --- Configuración del Secreto ---
+    const CODIGO_SECRETO = "1803";
+    const MENSAJE_GANADOR = "¡Felicidades! ¡CÓDIGO CORRECTO! 💍\n\nQueda solo un mes para vuestro GRAN DÍA.";
+
+    /**
+     * Lanza una animación de confeti más duradera, variada y con corazones
+     */
+    function launchConfettiAndHearts() {
+        const duration = 3 * 1000; 
+        const animationEnd = Date.now() + duration;
+        const colorsConfetti = ['#bb0000', '#ffffff', '#00ff00', '#0000ff', '#ffcc00'];
+        const colorsHearts = ['#ff4d4d', '#ff0000', '#cc0000'];
+        const heart = confetti.shapeFromPath({
+            path: 'M16 0C8 0 0 6 0 10c0 4 8 10 16 16c8-6 16-12 16-16c0-4-8-10-16-10z'
+        });
+
+        (function frame() {
+            confetti({ particleCount: 8, angle: 60, spread: 55, origin: { x: 0 }, colors: colorsConfetti });
+            confetti({ particleCount: 8, angle: 120, spread: 55, origin: { x: 1 }, colors: colorsConfetti });
+            confetti({
+                particleCount: 3,
+                spread: 80,
+                startVelocity: 30,
+                scalar: 0.9,
+                shapes: [heart],
+                colors: colorsHearts,
+                origin: { y: 0.5 }
+            });
+            
+            if (Date.now() < animationEnd) {
+                requestAnimationFrame(frame);
+            }
+        }());
+    }
+
+
+    function verificarCodigo() {
+        const entrada = document.getElementById('entrada-codigo');
+        const mensajeDiv = document.getElementById('mensaje-ganador');
+        const mensajePrincipal = document.getElementById('mensaje-principal');
+        const botonAbrir = document.getElementById('boton-abrir');
+        
+        const codigoIntroducido = entrada.value.trim();
+
+        if (codigoIntroducido === CODIGO_SECRETO) {
+            // CÓDIGO CORRECTO
+            mensajePrincipal.textContent = "¡CÓDIGO ACEPTADO! LA CAJA SE ABRE...";
+            mensajePrincipal.style.color = '#00ff00';
+            
+            mensajeDiv.textContent = MENSAJE_GANADOR;
+            
+            // Inicia la animación de cohetes y corazones
+            launchConfettiAndHearts();
+            
+            // Desactivar la interacción
+            entrada.disabled = true;
+            botonAbrir.style.display = 'none';
+
+        } else {
+            // CÓDIGO INCORRECTO
+            mensajePrincipal.textContent = "CÓDIGO INCORRECTO. Vuelve a intentarlo.";
+            mensajePrincipal.style.color = '#ff4d4d';
+            entrada.value = ''; // Limpia el campo
+            entrada.focus();
+        }
+    }
+
+    // Permitir presionar Enter para enviar el código
+    document.getElementById('entrada-codigo').addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            event.preventDefault(); 
+            verificarCodigo();
+        }
+    });
+
+</script>
+
+</body>
+</html>
